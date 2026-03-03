@@ -693,37 +693,40 @@ let currentGameId = null;
 const usedCells = new Set();
 
 // ===================== LEADERBOARD =====================
-function getLeaderboard() {
-  try { return JSON.parse(localStorage.getItem('gza_jeopardy_lb') || '[]'); } catch { return []; }
-}
-function saveLeaderboard(lb) {
-  try { localStorage.setItem('gza_jeopardy_lb', JSON.stringify(lb)); } catch {}
-}
 function addToLeaderboard(name, finalScore, correct, total) {
-  const lb = getLeaderboard();
-  const id = Date.now().toString(36);
-  lb.push({ id, name, score: finalScore, correct, total, date: new Date().toLocaleDateString() });
-  lb.sort((a,b) => b.score - a.score);
-  if (lb.length > 15) lb.length = 15;
-  saveLeaderboard(lb);
-  currentGameId = id;
-  return lb;
+  const newRef = push(ref(db, 'leaderboard'));
+  set(newRef, {
+    name,
+    score: finalScore,
+    correct,
+    total,
+    timestamp: Date.now()
+  });
 }
-function renderLeaderboard(tbodyId, highlightId) {
-  const lb = getLeaderboard();
-  const tbody = document.getElementById(tbodyId);
-  if (!lb.length) {
-    tbody.innerHTML = '<tr><td colspan="3" class="lb-empty">No scores yet — be the first!</td></tr>';
-    return;
-  }
-  const rankClass = i => i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-  tbody.innerHTML = lb.slice(0, 10).map((e, i) =>
-    `<tr class="${highlightId && e.id === highlightId ? 'lb-you' : ''}">` +
-    `<td class="lb-rank ${rankClass(i)}">${i+1}</td>` +
-    `<td>${esc(e.name)}${highlightId && e.id === highlightId ? ' ◀' : ''}</td>` +
-    `<td>$${e.score.toLocaleString()}</td></tr>`
-  ).join('');
+
+function listenToLeaderboard(tbodyId) {
+  onValue(ref(db, 'leaderboard'), snapshot => {
+    const data = snapshot.val();
+    const tbody = document.getElementById(tbodyId);
+    if (!data) {
+      tbody.innerHTML = '<tr><td colspan="3" class="lb-empty">No scores yet — be the first!</td></tr>';
+      return;
+    }
+
+    const arr = Object.values(data)
+      .sort((a,b) => b.score - a.score)
+      .slice(0,10);
+
+    tbody.innerHTML = arr.map((e,i)=>`
+      <tr>
+        <td class="lb-rank">${i+1}</td>
+        <td>${e.name}</td>
+        <td>$${e.score.toLocaleString()}</td>
+      </tr>
+    `).join('');
+  });
 }
+
 function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
 // ===================== FUZZY MATCHING =====================
@@ -814,6 +817,10 @@ function startGame() {
   document.getElementById('introScreen').classList.add('hidden');
   document.getElementById('gameScreen').classList.add('active');
   document.getElementById('playerNameDisplay').textContent = playerName;
+  set(ref(db, 'players/' + playerName), {
+  score: 0,
+  answered: 0
+  });
   resetGameState();
   buildBoard();
   updateUI();
@@ -851,6 +858,10 @@ function updateUI() {
   for(let i=1;i<=3;i++)
     document.getElementById(`strike${i}`).className=i<=strikes?'strike active':'strike';
   if(answeredCount>=30&&!gameOver) document.getElementById('finalBtn').classList.add('show');
+  update(ref(db, 'players/' + playerName), {
+  score: score,
+  answered: answeredCount
+  });
 }
 
 // ===================== CLUE MODAL =====================
@@ -943,7 +954,7 @@ function closeModal() { document.getElementById('overlay').classList.remove('act
 function endGame(completed) {
   gameOver=true;
   addToLeaderboard(playerName,score,correctCount,answeredCount);
-  renderLeaderboard('gameOverLBBody',currentGameId);
+  listenToLeaderboard('gameOverLBBody',currentGameId);
 
   const modal=document.getElementById('gameOverModal');
   const title=document.getElementById('gameOverTitle');
@@ -970,7 +981,7 @@ function backToIntro() {
   document.getElementById('gameScreen').classList.remove('active');
   document.getElementById('introScreen').classList.remove('hidden');
   nameInput.value=playerName; startBtn.disabled=false;
-  renderLeaderboard('introLBBody');
+  listenToLeaderboard('introLBBody');
 }
 
 // Keyboard
@@ -989,7 +1000,33 @@ document.getElementById('splashScreen').addEventListener('click', () => {
 });
 
 // Init
-renderLeaderboard('introLBBody');
+listenToLeaderboard('introLBBody');
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, update, push, onValue }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC27IKIKmf2UIkGGsimdBCkBpjEvrP03RM",
+  authDomain: "gza-jeopardy-game.firebaseapp.com",
+  databaseURL: "https://gza-jeopardy-game-default-rtdb.firebaseio.com",
+  projectId: "gza-jeopardy-game",
+  storageBucket: "gza-jeopardy-game.firebasestorage.app",
+  messagingSenderId: "839038870131",
+  appId: "1:839038870131:web:72dc93b5374401aa830006",
+  measurementId: "G-3Y9C3KQCEG"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.db = db;
+window.ref = ref;
+window.set = set;
+window.update = update;
+window.push = push;
+window.onValue = onValue;
 </script>
 </body>
 </html>
