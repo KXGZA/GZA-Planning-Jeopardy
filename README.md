@@ -26,6 +26,86 @@
     overflow-x: hidden;
   }
 
+  /* ===== SPLASH SCREEN ===== */
+  .splash-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    background: radial-gradient(ellipse at 50% 35%, #0d0d5e 0%, #060620 70%);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .splash-screen.hidden { display: none; }
+  .splash-card {
+    max-width: 750px;
+    width: 100%;
+    text-align: center;
+    animation: splashEntry 1s ease-out;
+  }
+  @keyframes splashEntry {
+    0% { opacity: 0; transform: scale(0.85); }
+    60% { opacity: 1; transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+  .splash-logo-wrap {
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(215,169,75,0.2), 0 0 120px rgba(6,12,233,0.3);
+    animation: splashGlow 3s ease-in-out infinite alternate;
+  }
+  @keyframes splashGlow {
+    0% { box-shadow: 0 0 60px rgba(215,169,75,0.15), 0 0 120px rgba(6,12,233,0.25); }
+    100% { box-shadow: 0 0 80px rgba(215,169,75,0.3), 0 0 150px rgba(6,12,233,0.4); }
+  }
+  .splash-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .splash-prompt {
+    margin-top: 32px;
+    font-family: 'Bitter', serif;
+    font-size: 1.05rem;
+    color: #8899cc;
+    letter-spacing: 2px;
+    animation: promptPulse 2s ease-in-out infinite;
+  }
+  @keyframes promptPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  /* Floating particles on splash */
+  .splash-screen::before,
+  .splash-screen::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(215,169,75,0.08);
+    animation: floatParticle 8s ease-in-out infinite;
+  }
+  .splash-screen::before {
+    width: 300px; height: 300px;
+    top: -80px; left: -80px;
+    animation-duration: 10s;
+  }
+  .splash-screen::after {
+    width: 200px; height: 200px;
+    bottom: -60px; right: -60px;
+    animation-duration: 7s;
+    animation-delay: 2s;
+  }
+  @keyframes floatParticle {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(30px, 20px) scale(1.05); }
+    50% { transform: translate(-10px, 40px) scale(0.95); }
+    75% { transform: translate(20px, -10px) scale(1.02); }
+  }
+
   /* ===== INTRO SCREEN ===== */
   .intro-screen {
     min-height: 100vh;
@@ -381,8 +461,53 @@
 </head>
 <body>
 
+<!-- ======== SPLASH SCREEN ======== -->
+<div class="splash-screen" id="splashScreen">
+  <div class="splash-card">
+    <div class="splash-logo-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" class="splash-svg">
+        <defs>
+          <radialGradient id="bgGrad" cx="50%" cy="40%" r="65%"><stop offset="0%" stop-color="#0d0d6e"/><stop offset="100%" stop-color="#060628"/></radialGradient>
+          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFE680"/><stop offset="35%" stop-color="#FFD700"/><stop offset="65%" stop-color="#D4A520"/><stop offset="100%" stop-color="#B8860B"/></linearGradient>
+          <linearGradient id="goldShine" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFF1A8"/><stop offset="50%" stop-color="#FFD700"/><stop offset="100%" stop-color="#C99A2E"/></linearGradient>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="12" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <clipPath id="bgClip"><rect x="0" y="0" width="800" height="500" rx="20"/></clipPath>
+        </defs>
+        <rect width="800" height="500" rx="20" fill="url(#bgGrad)"/>
+        <g opacity="0.06" clip-path="url(#bgClip)">
+          <line x1="0" y1="100" x2="800" y2="100" stroke="#FFD700" stroke-width="0.5"/><line x1="0" y1="200" x2="800" y2="200" stroke="#FFD700" stroke-width="0.5"/>
+          <line x1="0" y1="300" x2="800" y2="300" stroke="#FFD700" stroke-width="0.5"/><line x1="0" y1="400" x2="800" y2="400" stroke="#FFD700" stroke-width="0.5"/>
+          <line x1="160" y1="0" x2="160" y2="500" stroke="#FFD700" stroke-width="0.5"/><line x1="320" y1="0" x2="320" y2="500" stroke="#FFD700" stroke-width="0.5"/>
+          <line x1="480" y1="0" x2="480" y2="500" stroke="#FFD700" stroke-width="0.5"/><line x1="640" y1="0" x2="640" y2="500" stroke="#FFD700" stroke-width="0.5"/>
+        </g>
+        <ellipse cx="400" cy="235" rx="320" ry="200" fill="none" stroke="#FFD700" stroke-width="0.8" opacity="0.12"/>
+        <rect x="200" y="52" width="400" height="3" rx="1.5" fill="url(#goldGrad)" opacity="0.6"/>
+        <text x="400" y="108" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="42" font-weight="bold" letter-spacing="14" fill="url(#goldShine)" filter="url(#glow)">GZA</text>
+        <text x="400" y="200" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="90" font-weight="bold" letter-spacing="6" fill="url(#goldGrad)" filter="url(#softGlow)">PLANNING</text>
+        <g opacity="0.7"><line x1="140" y1="222" x2="310" y2="222" stroke="url(#goldGrad)" stroke-width="2"/><line x1="490" y1="222" x2="660" y2="222" stroke="url(#goldGrad)" stroke-width="2"/><circle cx="400" cy="222" r="5" fill="#FFD700"/><circle cx="340" cy="222" r="2.5" fill="#D4A520"/><circle cx="460" cy="222" r="2.5" fill="#D4A520"/></g>
+        <text x="400" y="300" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="78" font-weight="bold" font-style="italic" letter-spacing="3" fill="url(#goldGrad)" filter="url(#softGlow)">JEOPARDY!</text>
+        <g transform="translate(400,370)" opacity="0.5" filter="url(#glow)">
+          <rect x="-8" y="-40" width="16" height="40" fill="#FFD700" rx="1"/><rect x="-5" y="-35" width="3" height="4" fill="#0d0d6e" rx="0.5"/><rect x="2" y="-35" width="3" height="4" fill="#0d0d6e" rx="0.5"/>
+          <rect x="-5" y="-28" width="3" height="4" fill="#0d0d6e" rx="0.5"/><rect x="2" y="-28" width="3" height="4" fill="#0d0d6e" rx="0.5"/><rect x="-5" y="-21" width="3" height="4" fill="#0d0d6e" rx="0.5"/><rect x="2" y="-21" width="3" height="4" fill="#0d0d6e" rx="0.5"/>
+          <rect x="-30" y="-28" width="14" height="28" fill="#D4A520" rx="1"/><rect x="-28" y="-24" width="3" height="3" fill="#0d0d6e" rx="0.5"/><rect x="-22" y="-24" width="3" height="3" fill="#0d0d6e" rx="0.5"/><rect x="-28" y="-18" width="3" height="3" fill="#0d0d6e" rx="0.5"/><rect x="-22" y="-18" width="3" height="3" fill="#0d0d6e" rx="0.5"/>
+          <rect x="16" y="-32" width="14" height="32" fill="#D4A520" rx="1"/><rect x="18" y="-28" width="3" height="3" fill="#0d0d6e" rx="0.5"/><rect x="24" y="-28" width="3" height="3" fill="#0d0d6e" rx="0.5"/><rect x="18" y="-22" width="3" height="3" fill="#0d0d6e" rx="0.5"/><rect x="24" y="-22" width="3" height="3" fill="#0d0d6e" rx="0.5"/><rect x="18" y="-16" width="3" height="3" fill="#0d0d6e" rx="0.5"/><rect x="24" y="-16" width="3" height="3" fill="#0d0d6e" rx="0.5"/>
+          <rect x="-48" y="-20" width="12" height="20" fill="#B8860B" rx="1"/><rect x="36" y="-22" width="12" height="22" fill="#B8860B" rx="1"/>
+          <line x1="-60" y1="0" x2="60" y2="0" stroke="#FFD700" stroke-width="1.5" opacity="0.6"/>
+        </g>
+        <g transform="translate(680,100)" opacity="0.2"><circle cx="0" cy="0" r="28" fill="none" stroke="#FFD700" stroke-width="1"/><line x1="0" y1="-24" x2="0" y2="24" stroke="#FFD700" stroke-width="1"/><line x1="-24" y1="0" x2="24" y2="0" stroke="#FFD700" stroke-width="1"/><polygon points="0,-22 4,-6 -4,-6" fill="#FFD700"/><text x="0" y="-30" text-anchor="middle" font-family="Georgia,serif" font-size="10" fill="#FFD700">N</text></g>
+        <g opacity="0.15" stroke="#FFD700" stroke-width="1.5"><polyline points="30,30 30,60" fill="none"/><polyline points="30,30 60,30" fill="none"/><polyline points="770,30 770,60" fill="none"/><polyline points="770,30 740,30" fill="none"/><polyline points="30,470 30,440" fill="none"/><polyline points="30,470 60,470" fill="none"/><polyline points="770,470 770,440" fill="none"/><polyline points="770,470 740,470" fill="none"/></g>
+        <text x="400" y="420" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="16" letter-spacing="6" fill="#8899cc" opacity="0.8">PLANNING SERVICES EDITION</text>
+        <rect x="200" y="440" width="400" height="3" rx="1.5" fill="url(#goldGrad)" opacity="0.6"/>
+        <g opacity="0.3" fill="#FFD700"><circle cx="95" cy="78" r="1.2"/><circle cx="710" cy="420" r="1"/><circle cx="150" cy="430" r="1.5"/><circle cx="650" cy="72" r="1.3"/><circle cx="85" cy="340" r="1"/><circle cx="730" cy="280" r="1.2"/><circle cx="55" cy="190" r="0.8"/><circle cx="750" cy="180" r="1"/><circle cx="120" cy="260" r="0.9"/><circle cx="680" cy="350" r="1.1"/></g>
+      </svg>
+    </div>
+    <div class="splash-prompt">Click anywhere to continue</div>
+  </div>
+</div>
+
 <!-- ======== INTRO SCREEN ======== -->
-<div class="intro-screen" id="introScreen">
+<div class="intro-screen hidden" id="introScreen">
   <div class="intro-card">
     <div class="intro-logo">GZA Jeopardy!</div>
     <div class="intro-edition">Planning Services Edition</div>
@@ -498,27 +623,31 @@ const categories = [
 ];
 
 const clues = [
+  // GZA Planning Services
   [
     { value:200, clue:"These state/local review documents evaluate potential environmental effects of proposed actions.", answer:"Environmental Impact Statements (EISs)", keywords:["environmental impact","eis","impact statement","impact report"] },
-    { value:400, clue:"Studies that estimate trips and level-of-service so boards can evaluate land use approvals.", answer:"Traffic/Transportation Impact Studies", keywords:["traffic","transportation impact","impact stud","traffic study","traffic impact"] },
-    { value:600, clue:"The mapping/analytics toolset we use to visualize sites, hazards, and scenarios for decisions.", answer:"Geographic Information Systems (GIS)", keywords:["gis","geographic information","geographic info"] },
-    { value:800, clue:"Repositioning land via variances and rezonings to enhance project feasibility falls under this consulting area.", answer:"Land Use & Zoning Consulting (Discretionary Actions)", keywords:["land use","zoning","discretionary","zoning consulting"] },
+    { value:400, clue:"Studies that estimate trips travelled and level-of-service so planning boards can evaluate land use approvals.", answer:"Traffic/Transportation Impact Studies", keywords:["traffic","transportation impact","impact stud","traffic study","traffic impact"] },
+    { value:600, clue:"The mapping and analytics toolset and platform we use to visualize sites, hazards, and scenarios for decisions.", answer:"Geographic Information Systems (GIS)", keywords:["gis","geographic information","geographic info"] },
+    { value:800, clue:"Repositioning land via variances and rezonings to enhance project feasibility falls under this practice area.", answer:"Land Use & Environmental Planning Practice Area", keywords:["land use","environmental planning","practice area","zoning","land use and environmental"] },
     { value:1000, clue:"On-site oversight that helps ensure permit and environmental conditions are met during building activities.", answer:"Construction Compliance Monitoring", keywords:["construction compliance","compliance monitoring","construction monitor"] }
   ],
+  // Resilience & Climate Adaptation
   [
     { value:200, clue:"FEMA's pre-disaster funding program cited alongside Long Wharf's flood mitigation work.", answer:"BRIC (Building Resilient Infrastructure and Communities)", keywords:["bric","building resilient","resilient infrastructure"] },
-    { value:400, clue:"GZA's decision framework that weighs likelihood and consequence to guide resilient design.", answer:"Risk-Informed Decision Making", keywords:["risk-informed","risk informed","risk based decision","risk inform"] },
+    { value:400, clue:"FEMA's national GIS-based tool that estimates potential losses from hazard/damage.", answer:"HAZUS", keywords:["hazus","haz-us"] },
     { value:600, clue:"Nature-based shoreline stabilization approach designed for Old Saybrook's Hepburn Dune.", answer:"Living Shoreline", keywords:["living shoreline","living shore"] },
-    { value:800, clue:"UConn-affiliated institute that pre-qualified GZA for the Resilient Connecticut program.", answer:"CIRCA (Connecticut Institute for Resilience & Climate Adaptation)", keywords:["circa","connecticut institute","ct institute"] },
-    { value:1000, clue:"The web-mapping app GZA built to make hazard information accessible to officials and stakeholders.", answer:"Community Resiliency Risk Management App", keywords:["community resilien","risk management app","resiliency app","community risk"] }
+    { value:800, clue:"Fourteen staff members have this professional designation relevant to waterfront development, which is also a national rating system.", answer:"WEDG (Waterfront Edge Design Guidelines)", keywords:["wedg","waterfront edge","waterfront edge design","waterfront design guidelines"] },
+    { value:1000, clue:'What "superstorm" slammed the east coast and precipitated the launch of a HUD Design Competition and increased federal recognition of coastal resilience?', answer:"Hurricane/Superstorm Sandy", keywords:["sandy","superstorm sandy","hurricane sandy"] }
   ],
+  // Land-Use Alphabet Soup
   [
     { value:200, clue:"NY State program guiding waterfront development and coastal policy at the local level.", answer:"LWRP (Local Waterfront Revitalization Program)", keywords:["lwrp","local waterfront","waterfront revitalization","waterfront program"] },
     { value:400, clue:"Community-driven planning for brownfields that can unlock targeted reinvestment.", answer:"BOA (Brownfield Opportunity Area)", keywords:["boa","brownfield opportunity","brownfield area"] },
-    { value:600, clue:"Competitive initiative delivering Strategic Investment Plans for downtown revitalization.", answer:"DRI (Downtown Revitalization Initiative)", keywords:["dri","downtown revitalization","downtown initiative"] },
-    { value:800, clue:"FEMA-compliant plans that kick off the preparedness–recovery cycle for communities.", answer:"Natural Hazard Mitigation Plans", keywords:["hazard mitigation","natural hazard","mitigation plan"] },
-    { value:1000, clue:"NYC body that hears variance/special permit applications beyond zoning text.", answer:"BSA (Board of Standards and Appeals)", keywords:["bsa","board of standards","standards and appeals","standards appeals"] }
+    { value:600, clue:"What is the acronym for the ratio of building size to lot size.", answer:"FAR (Floor Area Ratio)", keywords:["far","floor area ratio","floor area"] },
+    { value:800, clue:"FEMA-compliant plans that kick off the preparedness–recovery cycle for communities.", answer:"NHMPs (Natural Hazard Mitigation Plans)", keywords:["nhmp","natural hazard mitigation","hazard mitigation plan","mitigation plan"] },
+    { value:1000, clue:"What is the foundational U.S. law requiring federal agencies to assess the environmental impacts of proposed major actions before making decisions.", answer:"NEPA (National Environmental Policy Act)", keywords:["nepa","national environmental policy","environmental policy act"] }
   ],
+  // Planning Potpourri (unchanged)
   [
     { value:200, clue:"This 1916 ordinance in New York City was the first comprehensive zoning resolution in the United States.", answer:"1916 NYC Zoning Resolution", keywords:["1916","zoning resolution","new york","nyc zoning"] },
     { value:400, clue:"Signed in 1970, this landmark federal law requires environmental impact statements for major federal actions.", answer:"National Environmental Policy Act (NEPA)", keywords:["nepa","national environmental policy","environmental policy act"] },
@@ -526,27 +655,29 @@ const clues = [
     { value:800, clue:"These two landscape architects designed the 'Greensward Plan,' the winning master plan for New York's Central Park in 1858.", answer:"Frederick Law Olmsted and Calvert Vaux", keywords:["olmsted","vaux","frederick law olmsted","calvert vaux","greensward"] },
     { value:1000, clue:"This 1987 Supreme Court decision established the 'essential nexus' test requiring a direct connection between a government exaction and the impact of a proposed development.", answer:"Nollan v. California Coastal Commission", keywords:["nollan","california coastal","nollan v california","essential nexus"] }
   ],
+  // Markets & Clients
   [
     { value:200, clue:"One of the core markets we 'get' on the Land Use & Environmental Planning page.", answer:"Residential & Commercial Developers, Municipalities & Government Agencies, Infrastructure, Industrial & Manufacturing, or Institutional (any one)", keywords:["residential","commercial","developer","municipalit","government agenc","infrastructure","industrial","manufacturing","institutional"], anyN:1 },
-    { value:400, clue:"These public-sector clients rely on GZA for mitigation planning and resilience work.", answer:"Municipalities, state and federal agencies", keywords:["municipalit","state agenc","federal agenc","government","public sector"] },
+    { value:400, clue:"These public-sector clients rely on GZA for mitigation planning and resilience work.", answer:"Municipalities, counties, and state agencies", keywords:["municipalit","count","state agenc","government","public sector","counties"] },
     { value:600, clue:"Global beauty brand listed in our sustainability/resilience project spotlights.", answer:"L'Oréal", keywords:["loreal","l'oreal","l'oréal","oreal"] },
     { value:800, clue:"NJ convenience chain highlighted as a long-time real estate client in a local industry feature.", answer:"QuickChek", keywords:["quickchek","quick chek","quickcheck","quick check"] },
-    { value:1000, clue:"Owners/operators in this sector are explicit targets for hazard-risk services.", answer:"Critical Infrastructure", keywords:["critical infrastructure","critical infra"] }
+    { value:1000, clue:'Owners and operators in this "vital" sector are explicit targets for hazard-risk services, like power, water, and communications networks.', answer:"Critical Infrastructure", keywords:["critical infrastructure","critical infra"] }
   ],
+  // People & Practice
   [
     { value:200, clue:"AICP/PP who leads Land Use & Environmental Planning; contact on the services page.", answer:"Kevin Williams", keywords:["kevin williams","kevin","williams"] },
     { value:400, clue:"Principal who heads Natural Hazard Risk Management & Climate Adaptation.", answer:"David M. Leone", keywords:["david","leone","david leone"] },
     { value:600, clue:"2023 acquisition that expanded our Mid-Atlantic urban planning resources.", answer:"Equity Environmental Engineering", keywords:["equity environmental","equity engineer","equity env"] },
-    { value:800, clue:"GZA's President & CEO quoted on our strengths in natural-hazard consulting.", answer:"Patrick Sheehan", keywords:["patrick sheehan","sheehan","patrick"] },
-    { value:1000, clue:"Leader noted in our internal practice deck for sustainability & resilience planning initiatives.", answer:"Sarah Sklar", keywords:["sarah sklar","sklar","sarah"] }
+    { value:800, clue:"In what office does the majority of the planning team sit.", answer:"Manhattan", keywords:["manhattan","new york","nyc","new york city"] },
+    { value:1000, clue:"GZA's President & CEO quoted on our strengths in natural-hazard consulting.", answer:"Patrick Sheehan", keywords:["patrick sheehan","sheehan","patrick"] }
   ]
 ];
 
 const finalJeopardy = {
   category:"Urban Coastal Resilience",
-  clue:"This Connecticut city secured $25M in FEMA BRIC and a $160M USACE appropriation to advance flood mitigation in its Long Wharf District, informed by GZA's study.",
-  answer:"New Haven",
-  keywords:["new haven"]
+  clue:"Who is the American landscape architect and journalist widely regarded as the founder of American landscape architecture — best known for designing iconic public spaces like Central Park in New York City, the U.S. Capitol grounds, the Biltmore Estate, and Boston's 'Emerald Necklace.'",
+  answer:"Frederick Law Olmsted",
+  keywords:["olmsted","frederick law olmsted","frederick olmsted"]
 };
 
 // ===================== STATE =====================
@@ -848,6 +979,13 @@ document.addEventListener('keydown',e=>{
     if(document.getElementById('submitBtn').style.display!=='none') submitAnswer();
     else if(document.getElementById('backBtn').style.display!=='none') closeModal();
   }
+});
+
+// Splash screen
+document.getElementById('splashScreen').addEventListener('click', () => {
+  document.getElementById('splashScreen').classList.add('hidden');
+  document.getElementById('introScreen').classList.remove('hidden');
+  document.getElementById('playerNameInput').focus();
 });
 
 // Init
